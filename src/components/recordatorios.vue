@@ -3,15 +3,19 @@ import { computed } from "vue";
 import Cabecera from "./cabecera.vue";
 import Tarea from "./tareas.vue";
 import Pie from "./pie.vue";
-import { useCollection, useFirestore } from "vuefire";
-import { collection, addDoc, query, orderBy, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { useCollection, useFirestore,useCurrentUser } from "vuefire";
+import { collection, addDoc, query,where, orderBy, deleteDoc, doc, updateDoc } from "firebase/firestore";
 
-
+const user = useCurrentUser();
 const db = useFirestore();
-const listaRecordatorios = useCollection(
-  query(collection(db, "recordatorio"), orderBy("prioridadValor", "desc"))
-);
+let consulta;
+let listaRecordatorios;
 
+if (user.value.uid === "Uo17udecrNfxrOsagF1LR809Bos2") {
+  listaRecordatorios = useCollection(query(collection(db, "recordatorio"), orderBy("prioridadValor", "desc")));
+} else {
+  listaRecordatorios = useCollection(query(collection(db, "recordatorio"), orderBy("prioridadValor", "desc"), where("user", "==", user.value.uid)));
+}
 // Función para calcular tiempo transcurrido
 function calculateTime(taskTime) {
   const now = Date.now();
@@ -48,6 +52,9 @@ function altaNuevaNota(texto, prioridadSeleccionada) {
     prioridadValor: prioridadValores[prioridadSeleccionada || "media"],
     fechaCreacion: new Date().toISOString(),
     acabada: false,
+    user:user.value.uid,
+    
+
   };
 
   addDoc(collection(db, "recordatorio"), nuevaTarea).then(() => {
@@ -136,6 +143,7 @@ function actualizarPrioridad(indice, nuevaPrioridad) {
           :prioridad="tarea.prioridad"
           :fechaCreacion="taskTimes[indice]"
           :acabada="tarea.acabada"
+          
           @borrado="borrarTarea(tarea.id)"
           @completada="completarTarea(indice)"
           @actualizarPrioridad="(nuevaPrioridad) => actualizarPrioridad(indice, nuevaPrioridad)"

@@ -50,14 +50,17 @@ ul {
   padding: 0;
   display: flex;
   gap: 1.5rem;
+  flex-grow: 1;
 }
 
 li {
   display: inline;
 }
-.usuario{
-  padding-left: 1200px;
+
+.usuario {
+  margin-left: auto; 
 }
+
 a {
   text-decoration: none;
   color: white;
