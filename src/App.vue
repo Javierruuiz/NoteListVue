@@ -1,7 +1,7 @@
 <script setup>
     import  { useRouter } from 'vue-router';
     import { getCurrentUser } from 'vuefire';
-    import login from './components/login.vue';
+   
     const router = useRouter();
 
     router.beforeEach(async(to, from) => {

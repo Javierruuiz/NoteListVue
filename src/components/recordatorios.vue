@@ -8,7 +8,7 @@ import { collection, addDoc, query,where, orderBy, deleteDoc, doc, updateDoc } f
 
 const user = useCurrentUser();
 const db = useFirestore();
-let consulta;
+
 let listaRecordatorios;
 
 if (user.value.uid === "Uo17udecrNfxrOsagF1LR809Bos2") {
@@ -50,7 +50,7 @@ function altaNuevaNota(texto, prioridadSeleccionada) {
     titulo: texto,
     prioridad: prioridadSeleccionada || "media",
     prioridadValor: prioridadValores[prioridadSeleccionada || "media"],
-    fechaCreacion: new Date().toISOString(),
+    fechaCreacion: new Date(),
     acabada: false,
     user:user.value.uid,
     
@@ -78,7 +78,7 @@ function completarTarea(indice) {
 
   updateDoc(tareaRef, { acabada: !tarea.acabada })
     .then(() => {
-      console.log(`Tarea ${tarea.acabada ? "desmarcada" : "completada"} exitosamente`);
+      console.log(`Tarea editada exitosamente`);
     })
     .catch((error) => {
       console.error("Error al completar la tarea:", error);
@@ -87,6 +87,7 @@ function completarTarea(indice) {
 
 function borrarTareasCompletadas() {
   const tareasCompletadas = listaRecordatorios.value.filter((tarea) => tarea.acabada);
+
 
   tareasCompletadas.forEach((tarea) => {
     deleteDoc(doc(db, "recordatorio", tarea.id))
@@ -132,7 +133,7 @@ function actualizarPrioridad(indice, nuevaPrioridad) {
 
   <main>
     <p>
-      {{ listaRecordatorios.filter((t) => !t.acabada).length }} Pending tasks out of a total of {{ listaRecordatorios.length }}
+      {{ listaRecordatorios.filter((t) => !t.prioridadValor.acabada).length }} Pending tasks out of a total of {{ listaRecordatorios.length }}
       <button @click="borrarTareasCompletadas">Delete completed tasks</button>
     </p>
 
